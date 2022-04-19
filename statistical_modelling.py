@@ -20,6 +20,15 @@ from sklearn.metrics import accuracy_score
 
 from sklearn.decomposition import PCA, TruncatedSVD
 from sklearn.manifold import TSNE
+from sklearn.ensemble import RandomForestClassifier
+
+import nltk
+from nltk.corpus import brown
+from nltk import pos_tag
+from nltk import pos_tag_sents
+from nltk.tokenize import word_tokenize
+nltk.download('averaged_perceptron_tagger')
+
 
 def remove_null_values(data):
   """
@@ -128,44 +137,77 @@ def baggingclassifier(X_train, y_train, X_test,y_test):
   score = accuracy_score(y_test,pred)
   return score
 
-def LSA_TSNE_SVM(x_train_sent1_tfidf,x_train_sent2_tfidf,x_test_sent1_tfidf,x_test_sent2_tfidf,train_labels,test_labels):
+
+def LSA_SVM(x_train_sent1_tfidf,x_train_sent2_tfidf,x_test_sent1_tfidf,x_test_sent2_tfidf,train_labels,test_labels):
   print(x_train_sent1_tfidf.shape)
   print(x_train_sent2_tfidf.shape)
   print(x_test_sent1_tfidf.shape)
   print(x_test_sent2_tfidf.shape)
 
   print("LSA")
-  pca_sent1 = TruncatedSVD(n_components=50, n_iter=10, random_state=42)
-  pca_sent1.fit(x_train_sent1_tfidf)
-  pca_sent1_train = pca_sent1.transform(x_train_sent1_tfidf)
-  pca_sent1_test = pca_sent1.transform(x_test_sent1_tfidf)
+  lsa_sent1 = TruncatedSVD(n_components=50, n_iter=10, random_state=42)
+  lsa_sent1.fit(x_train_sent1_tfidf)
+  lsa_sent1_train = lsa_sent1.transform(x_train_sent1_tfidf)
+  lsa_sent1_test = lsa_sent1.transform(x_test_sent1_tfidf)
 
   
-  pca_sent2 = TruncatedSVD(n_components=50, n_iter=10, random_state=42)
-  pca_sent2.fit(x_train_sent2_tfidf)
-  pca_sent2_train = pca_sent2.transform(x_train_sent2_tfidf)
-  pca_sent2_test = pca_sent2.transform(x_test_sent2_tfidf)
+  lsa_sent2 = TruncatedSVD(n_components=50, n_iter=10, random_state=42)
+  lsa_sent2.fit(x_train_sent2_tfidf)
+  lsa_sent2_train = lsa_sent2.transform(x_train_sent2_tfidf)
+  lsa_sent2_test = lsa_sent2.transform(x_test_sent2_tfidf)
 
-  #print(pca_sent1_train)
-  #print(train_data['sentence1'])
-  print("TSNE")
-  tsne_sent1 = TSNE(n_components=2, learning_rate='auto', init='random',n_iter=250).fit(pca_sent1_train)
-  tsne_sent1_train = tsne_sent1.transform(pca_sent1_train)
-  tsne_sent2 = TSNE(n_components=2, learning_rate='auto', init='random',n_iter=250).fit(pca_sent2_train)
-  tsne_sent2_train = tsne_sent2.transform(pca_sent2_train)
 
-  tsne_sent1_test = tsne_sent1.transform(pca_sent1_test)
-  tsne_sent2_test = tsne_sent2.transform(pca_sent2_test)
-
-  X_train = np.hstack((tsne_sent1_train,tsne_sent2_train))
-  X_test = np.hstack((tsne_sent1_test,tsne_sent2_test))
+  X_train = np.hstack((lsa_sent1_train,lsa_sent2_train))
+  X_test = np.hstack((lsa_sent1_test,lsa_sent2_test))
   
   print("SVM")
   model = LinearSVC(C=0.8,max_iter=100) 
   model.fit(X_train, train_labels)
   pred = model.predict(X_test)
   score = accuracy_score(test_labels, pred)
-  print(score)
+  print("Dev Acc:",score)
+
+def LSA_RandomForest(x_train_sent1_tfidf,x_train_sent2_tfidf,x_test_sent1_tfidf,x_test_sent2_tfidf,train_labels,test_labels):
+  print(x_train_sent1_tfidf.shape)
+  print(x_train_sent2_tfidf.shape)
+  print(x_test_sent1_tfidf.shape)
+  print(x_test_sent2_tfidf.shape)
+
+  print("LSA")
+  lsa_sent1 = TruncatedSVD(n_components=50, n_iter=10, random_state=42)
+  lsa_sent1.fit(x_train_sent1_tfidf)
+  lsa_sent1_train = lsa_sent1.transform(x_train_sent1_tfidf)
+  lsa_sent1_test = lsa_sent1.transform(x_test_sent1_tfidf)
+
+  
+  lsa_sent2 = TruncatedSVD(n_components=50, n_iter=10, random_state=42)
+  lsa_sent2.fit(x_train_sent2_tfidf)
+  lsa_sent2_train = lsa_sent2.transform(x_train_sent2_tfidf)
+  lsa_sent2_test = lsa_sent2.transform(x_test_sent2_tfidf)
+
+
+  X_train = np.hstack((lsa_sent1_train,lsa_sent2_train))
+  X_test = np.hstack((lsa_sent1_test,lsa_sent2_test))
+  
+  print("Random Forest")
+  model = RandomForestClassifier(n_estimators=50,max_depth=7) 
+  model.fit(X_train, train_labels)
+  pred = model.predict(X_test)
+  score = accuracy_score(test_labels, pred)
+  print("Dev Acc:",score)
+
+def POS_SVM(train_data, test_data):
+
+  print("POS")
+  print(train_data['sentence1'].values[0])
+  sents = [word_tokenize(t) for t in train_data['sentence1'].values[:10]]
+  print(sents[0])
+  temp_pd = pd.DataFrame()
+  temp_pd['pos'] = sents
+  print(temp_pd['pos'])
+  pos_train_sent1 = pos_tag(temp_pd['pos'])
+  print(pos_train_sent1)
+
 
 
 def main():
@@ -176,7 +218,7 @@ def main():
   #load the data:
   print("loading data")
   train_data = pd.read_csv("snli_1.0/snli_1.0_train.txt", sep="\t")
-  test_data = pd.read_csv("snli_1.0/snli_1.0_test.txt", sep="\t")
+  test_data = pd.read_csv("snli_1.0/snli_1.0_dev.txt", sep="\t")
 
   train_data = remove_null_values(train_data)
   test_data = remove_null_values(test_data)
@@ -185,6 +227,7 @@ def main():
   
   #example usage of the TFIDF function
   # fit tfidf with sentences in the training data
+  '''
   print("tf-idf")
   train_data['combined_sentences'] = train_data['sentence1'] + " " + train_data['sentence2']
   tfidf_vect = extract_tfidf(train_data['combined_sentences'])
@@ -195,9 +238,11 @@ def main():
   x_train_sent2_tfidf = tfidf_vect.transform(train_data['sentence2'])
   x_test_sent1_tfidf = tfidf_vect.transform(test_data['sentence1'])
   x_test_sent2_tfidf = tfidf_vect.transform(test_data['sentence2'])
-
-  LSA_TSNE_SVM(x_train_sent1_tfidf,x_train_sent2_tfidf,x_test_sent1_tfidf,x_test_sent2_tfidf,train_labels,test_labels)
-  
+  '''
+  #LSA_SVM(x_train_sent1_tfidf,x_train_sent2_tfidf,x_test_sent1_tfidf,x_test_sent2_tfidf,train_labels,test_labels)
+  #LSA_RandomForest(x_train_sent1_tfidf,x_train_sent2_tfidf,x_test_sent1_tfidf,x_test_sent2_tfidf,train_labels,test_labels)
+  POS_SVM(train_data, test_data)
+  '''
   print("cosine similarities")
   #use tfidf to calculate cosine similarities
   train_tfidf_cosine_similarities = get_cosine_similarity(x_train_sent1_tfidf, x_train_sent2_tfidf)
@@ -225,8 +270,9 @@ def main():
 
   #bleu_score = get_bleu_score(train_data['sentence1'], train_data['sentence2'])
   #print('bleu scores: ', bleu_score)
-
+  
   return svm_score, bagging_score
+  '''
   
 
 if __name__ == '__main__':
