@@ -166,8 +166,8 @@ def main():
     svm_score = svm_model(train_data[features], train_labels, test_data[features], test_labels)
     bagging_score = baggingclassifier(train_data[features],train_labels, test_data[features], test_labels)
 
-    print('the score from the svm model is: ', svm_score) # 0.289
-    print('the score from the bagging model is: ', bagging_score) #0.5
+    print('the score from the svm model is: ', svm_score) # 0.289 with only 15 data points in toy set
+    print('the score from the bagging model is: ', bagging_score) #0.5 with only 15 data points in toy set 
 
     #bleu_score = get_bleu_score(train_data['sentence1'], train_data['sentence2'])
     #print('bleu scores: ', bleu_score)
