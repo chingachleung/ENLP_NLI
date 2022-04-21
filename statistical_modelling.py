@@ -211,22 +211,50 @@ def POS_SVM(train_data, test_data):
 
   print("POS")
   print(train_data['sentence1'].values[0])
-  sents = [word_tokenize(t) for t in train_data['sentence1'].values]
-  print(sents[0])
+  sents1 = [word_tokenize(t) for t in train_data['sentence1'].values]
+  sents2 = [word_tokenize(t) for t in train_data['sentence2'].values]
+
+  sents1_test = [word_tokenize(t) for t in test_data['sentence1'].values]
+  sents2_test = [word_tokenize(t) for t in test_data['sentence2'].values]
+
   temp_pd = pd.DataFrame()
-  temp_pd['pos'] = sents
-  print(temp_pd['pos'])
-  #pos_train_sent1 = pos_tag(temp_pd['pos'])
-  pos_train_sent1 = temp_pd['pos'].apply(pos_tag)
-  #print(pos_train_sent1)
+  temp_pd['pos1'] = sents1
+  temp_pd['pos2'] = sents2
+
+  temp_pd2 = pd.DataFrame()
+  temp_pd2['pos1_test'] = sents1_test
+  temp_pd2['pos2_test'] = sents2_test
+  print(temp_pd['pos1'])
+
+  pos_train_sent1 = temp_pd['pos1'].apply(pos_tag)
+  pos_train_sent2 = temp_pd['pos2'].apply(pos_tag)
+  pos_test_sent1 = temp_pd2['pos1_test'].apply(pos_tag)
+  pos_test_sent2 = temp_pd2['pos2_test'].apply(pos_tag)
+
 
   pos_train_sent1 = pos_train_sent1.apply(get_pos_str)
+  pos_train_sent2 = pos_train_sent2.apply(get_pos_str)
+
+  pos_test_sent1 = pos_test_sent1.apply(get_pos_str)
+  pos_test_sent2 = pos_test_sent2.apply(get_pos_str)
   print(pos_train_sent1)
 
-  tfidf_vect = TfidfVectorizer(ngram_range=(2,2))
-  temp = tfidf_vect.fit_transform(pos_train_sent1)
-  #print(temp)
-  print(temp.shape)
+  pos_sent1_tf = TfidfVectorizer(ngram_range=(2,2))
+  pos_sent1_tf.fit(pos_train_sent1)
+
+
+  pos_sent2_tf = TfidfVectorizer(ngram_range=(2,2))
+  pos_sent2_tf.fit(pos_train_sent2)
+
+  pos_sent1_train = pos_sent1_tf.transform(pos_train_sent1)
+  pos_sent2_train = pos_sent2_tf.transform(pos_train_sent2)
+  pos_sent1_test = pos_sent1_tf.transform(pos_test_sent1)
+  pos_sent2_test = pos_sent1_tf.transform(pos_test_sent2)
+
+  print(pos_sent1_train.shape)
+  print(pos_sent1_test.shape)
+
+
 
   '''
   print("get unique bigrams")
