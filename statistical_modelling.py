@@ -21,6 +21,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.decomposition import PCA, TruncatedSVD
 from sklearn.manifold import TSNE
 from sklearn.ensemble import RandomForestClassifier
+from scipy.sparse import hstack
 
 import nltk
 from nltk.corpus import brown
@@ -207,7 +208,7 @@ def get_pos_str(pos_sent):
     #bi_gram.append(curr_pos+'_'+nxt_pos)
   return pos_str
 
-def POS_SVM(train_data, test_data):
+def POS_SVM(train_data, test_data, x_train_sent1_tfidf,x_train_sent2_tfidf,x_test_sent1_tfidf,x_test_sent2_tfidf):
 
   print("POS")
   print(train_data['sentence1'].values[0])
@@ -254,6 +255,20 @@ def POS_SVM(train_data, test_data):
   print(pos_sent1_train.shape)
   print(pos_sent1_test.shape)
 
+  #temp = x_train_sent1_tfidf + x_train_sent1_tfidf
+  x_train_sent1_tfidf_pos = hstack((x_train_sent1_tfidf, pos_sent1_train))
+  x_train_sent2_tfidf_pos = hstack((x_train_sent2_tfidf, pos_sent2_train))
+  x_test_sent1_tfidf_pos = hstack((x_test_sent1_tfidf, pos_sent1_train))
+  x_test_sent2_tfidf_pos = hstack((x_test_sent2_tfidf, pos_sent2_test))
+  print(x_train_sent1_tfidf_pos.shape)
+
+  train_labels = train_data["gold_label"]
+  test_labels = test_data["gold_label"]
+  
+  LSA_SVM(x_train_sent1_tfidf_pos,x_train_sent2_tfidf_pos,x_test_sent1_tfidf_pos,x_test_sent2_tfidf_pos,train_labels,test_labels)
+
+  #lsa_sent1 = TruncatedSVD(n_components=50, n_iter=10, random_state=42)
+  #lsa_sent1.fit(temp)
 
 
   '''
@@ -287,7 +302,7 @@ def main():
   
   #example usage of the TFIDF function
   # fit tfidf with sentences in the training data
-  '''
+  
   print("tf-idf")
   train_data['combined_sentences'] = train_data['sentence1'] + " " + train_data['sentence2']
   tfidf_vect = extract_tfidf(train_data['combined_sentences'])
@@ -298,10 +313,10 @@ def main():
   x_train_sent2_tfidf = tfidf_vect.transform(train_data['sentence2'])
   x_test_sent1_tfidf = tfidf_vect.transform(test_data['sentence1'])
   x_test_sent2_tfidf = tfidf_vect.transform(test_data['sentence2'])
-  '''
+  
   #LSA_SVM(x_train_sent1_tfidf,x_train_sent2_tfidf,x_test_sent1_tfidf,x_test_sent2_tfidf,train_labels,test_labels)
   #LSA_RandomForest(x_train_sent1_tfidf,x_train_sent2_tfidf,x_test_sent1_tfidf,x_test_sent2_tfidf,train_labels,test_labels)
-  POS_SVM(train_data, test_data)
+  POS_SVM(train_data, test_data, x_train_sent1_tfidf,x_train_sent2_tfidf,x_test_sent1_tfidf,x_test_sent2_tfidf)
   '''
   print("cosine similarities")
   #use tfidf to calculate cosine similarities
