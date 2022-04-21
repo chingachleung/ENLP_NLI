@@ -196,19 +196,51 @@ def LSA_RandomForest(x_train_sent1_tfidf,x_train_sent2_tfidf,x_test_sent1_tfidf,
   score = accuracy_score(test_labels, pred)
   print("Dev Acc:",score)
 
+def get_pos_str(pos_sent):
+  pos_str = ''
+  for i in range(len(pos_sent)):
+    curr = pos_sent[i]
+    curr_word = curr[0]
+    curr_pos = curr[1]
+  
+    pos_str = pos_str +' '+ curr_pos
+    #bi_gram.append(curr_pos+'_'+nxt_pos)
+  return pos_str
+
 def POS_SVM(train_data, test_data):
 
   print("POS")
   print(train_data['sentence1'].values[0])
-  sents = [word_tokenize(t) for t in train_data['sentence1'].values[:10]]
+  sents = [word_tokenize(t) for t in train_data['sentence1'].values]
   print(sents[0])
   temp_pd = pd.DataFrame()
   temp_pd['pos'] = sents
   print(temp_pd['pos'])
-  pos_train_sent1 = pos_tag(temp_pd['pos'])
+  #pos_train_sent1 = pos_tag(temp_pd['pos'])
+  pos_train_sent1 = temp_pd['pos'].apply(pos_tag)
+  #print(pos_train_sent1)
+
+  pos_train_sent1 = pos_train_sent1.apply(get_pos_str)
   print(pos_train_sent1)
 
+  tfidf_vect = TfidfVectorizer(ngram_range=(2,2))
+  temp = tfidf_vect.fit_transform(pos_train_sent1)
+  #print(temp)
+  print(temp.shape)
 
+  '''
+  print("get unique bigrams")
+  all_bigrams = []
+  for i in range(len(pos_train_sent1.values)):
+    #list(np.unique(pos_train_sent1[i]))
+    all_bigrams.extend(np.unique(pos_train_sent1[i]))
+  
+  all_bigrams = np.unique(all_bigrams)
+
+  #get pos n-grams
+  print(all_bigrams)
+  print(len(all_bigrams))
+  '''
 
 def main():
   """
