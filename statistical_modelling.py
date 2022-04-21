@@ -162,7 +162,7 @@ def LSA_SVM(x_train_sent1_tfidf,x_train_sent2_tfidf,x_test_sent1_tfidf,x_test_se
   X_test = np.hstack((lsa_sent1_test,lsa_sent2_test))
   
   print("SVM")
-  model = LinearSVC(C=0.8,max_iter=100) 
+  model = LinearSVC(C=0.8,max_iter=150) 
   model.fit(X_train, train_labels)
   pred = model.predict(X_test)
   score = accuracy_score(test_labels, pred)
@@ -240,17 +240,17 @@ def POS_SVM(train_data, test_data, x_train_sent1_tfidf,x_train_sent2_tfidf,x_tes
   pos_test_sent2 = pos_test_sent2.apply(get_pos_str)
   print(pos_train_sent1)
 
-  pos_sent1_tf = TfidfVectorizer(ngram_range=(2,2))
+  pos_sent1_tf = TfidfVectorizer(ngram_range=(1,1))
   pos_sent1_tf.fit(pos_train_sent1)
 
 
-  pos_sent2_tf = TfidfVectorizer(ngram_range=(2,2))
+  pos_sent2_tf = TfidfVectorizer(ngram_range=(1,1))
   pos_sent2_tf.fit(pos_train_sent2)
 
   pos_sent1_train = pos_sent1_tf.transform(pos_train_sent1)
   pos_sent2_train = pos_sent2_tf.transform(pos_train_sent2)
   pos_sent1_test = pos_sent1_tf.transform(pos_test_sent1)
-  pos_sent2_test = pos_sent1_tf.transform(pos_test_sent2)
+  pos_sent2_test = pos_sent2_tf.transform(pos_test_sent2)
 
   print(pos_sent1_train.shape)
   print(pos_sent1_test.shape)
@@ -258,7 +258,7 @@ def POS_SVM(train_data, test_data, x_train_sent1_tfidf,x_train_sent2_tfidf,x_tes
   #temp = x_train_sent1_tfidf + x_train_sent1_tfidf
   x_train_sent1_tfidf_pos = hstack((x_train_sent1_tfidf, pos_sent1_train))
   x_train_sent2_tfidf_pos = hstack((x_train_sent2_tfidf, pos_sent2_train))
-  x_test_sent1_tfidf_pos = hstack((x_test_sent1_tfidf, pos_sent1_train))
+  x_test_sent1_tfidf_pos = hstack((x_test_sent1_tfidf, pos_sent1_test))
   x_test_sent2_tfidf_pos = hstack((x_test_sent2_tfidf, pos_sent2_test))
   print(x_train_sent1_tfidf_pos.shape)
 
