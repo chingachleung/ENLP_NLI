@@ -13,7 +13,7 @@ To run training for this model, in the svm folder, run 'python3 statistical_mode
 A folder includes `utils.py` and `lstm.py`. utils.py includes helper functions for pre-processing and feature extraction. 
 
 `lstm.py` takes in 3 argument: training data file, test data file and embedding file. Example usage below:
-`python3 lstm.py --emb_file <your embedding file> --train <you train file> --test <your test file>
+`python3 lstm.py --emb_file <your embedding file> --train <you train file> --test <your test file>`
 
 ## BiLSTM with BERT embeddings
 To run training for this model, in the bilistm_bert_emd folder, run 'python3 train.py'
