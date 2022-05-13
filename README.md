@@ -39,4 +39,4 @@ To run this model, you need the follwoing:
 
 3. Download BERT base pretrined model (uncased), https://tfhub.dev/tensorflow/bert_en_uncased_L-12_H-768_A-12/4
 
-4. two files with the same code, 1 for Google Colab, and the other if you are going to run this code locally. (GPU preferred) 
+4. Google Colab file was run using Colab Pro. (GPU preferred) 
