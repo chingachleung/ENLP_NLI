@@ -35,6 +35,10 @@ To run this model, you need the follwoing:
 
 1. Download the dataset from, https://nlp.stanford.edu/projects/snli/
 
-2. Install offical package, https://github.com/tensorflow/models/tree/master/official. Using the below command, ```!pip install tf-models-official```
+2. Install offical package, https://github.com/tensorflow/models/tree/master/official. Using this command command, ```
+!pip install tf-models-official
+```
 
 3. Download BERT base pretrined model (uncased), https://tfhub.dev/tensorflow/bert_en_uncased_L-12_H-768_A-12/4
+
+4. two files with the same code, 1 for Google Colab, and the other if you are going to run this code locally. (GPU prefered) 
