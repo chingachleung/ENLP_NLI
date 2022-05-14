@@ -207,7 +207,7 @@ def main():
     earlystop = EarlyStopping(monitor="val_accuracy",min_delta=0.001,restore_best_weights=True,
                               patience=1)
     history = model.fit([X1_train, X2_train,ling_train], Y_train, validation_data=([X1_valid, X2_valid, ling_val],Y_val),
-                        verbose=1,batch_size=80,callbacks=[earlystop],validation_freq=1,epochs=5)
+                        verbose=1,batch_size=25,callbacks=[earlystop],validation_freq=1,epochs=5)
 
 
     loss, acc = model.evaluate([X1_test, X2_test,ling_test],Y_test)
